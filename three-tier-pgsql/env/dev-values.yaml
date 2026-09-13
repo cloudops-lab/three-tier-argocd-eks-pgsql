@@ -29,3 +29,11 @@ resources:
 rollout:
   autoPromotionEnabled: true
   scaleDownDelaySeconds: 15
+
+database:
+  host: postgres-rds-sg.c4dqoyue0lsc.us-east-1.rds.amazonaws.com
+  readHost: postgres-rds-sg-read-1.c4dqoyue0lsc.us-east-1.rds.amazonaws.com
+  port: "5432"
+  name: postgres
+  user: mypostgresqlu1
+  password: "mypostgresqlu1123"
