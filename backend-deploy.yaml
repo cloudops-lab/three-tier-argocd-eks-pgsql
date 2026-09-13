@@ -1,0 +1,106 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: three-tier-backend
+  namespace: production
+  labels:
+    app: three-tier-backend
+spec:
+  replicas: 3
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+
+  selector:
+    matchLabels:
+      app: three-tier-backend
+
+  template:
+    metadata:
+      labels:
+        app: three-tier-backend
+
+    spec:
+      containers:
+        - name: backend
+
+          image: 183678667273.dkr.ecr.us-east-1.amazonaws.com/three-tier-backend:v1
+
+          imagePullPolicy: Always
+
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+
+          env:
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: DB_HOST
+
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: DB_PORT
+
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: DB_NAME
+
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: DB_USER
+
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: DB_PASSWORD
+
+            - name: GEMINI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: gemini-secret
+                  key: GEMINI_API_KEY
+
+            - name: DB_READ_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: DB_READ_HOST
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: three-tier-backend
+  namespace: production
+spec:
+  type: ClusterIP
+
+  selector:
+    app: three-tier-backend
+
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8000
+      targetPort: 8000
