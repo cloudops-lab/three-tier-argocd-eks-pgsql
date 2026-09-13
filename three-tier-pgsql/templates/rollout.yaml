@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: {{ include "three-tier-pgsql.fullname" . }}-rollout
+  labels:
+    {{- include "three-tier-pgsql.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    blueGreen:
+      activeService: {{ include "three-tier-pgsql.fullname" . }}-active
+      previewService: {{ include "three-tier-pgsql.fullname" . }}-preview
+      autoPromotionEnabled: {{ .Values.rollout.autoPromotionEnabled }}
+      scaleDownDelaySeconds: {{ .Values.rollout.scaleDownDelaySeconds | default 30 }}
+  selector:
+    matchLabels:
+      {{- include "three-tier-pgsql.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "three-tier-pgsql.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy | default "Always" }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

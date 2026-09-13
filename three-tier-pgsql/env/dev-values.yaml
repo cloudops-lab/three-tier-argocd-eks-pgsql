@@ -1,0 +1,31 @@
+replicaCount: 1
+
+image:
+  repository: 183678667273.dkr.ecr.us-east-1.amazonaws.com/three-tier-frontend
+  tag: v1
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: dev.opsfusion.in
+      paths:
+        - path: /
+          pathType: Prefix
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
+
+rollout:
+  autoPromotionEnabled: true
+  scaleDownDelaySeconds: 15
