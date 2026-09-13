@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: 183678667273.dkr.ecr.us-east-1.amazonaws.com/three-tier-frontend
-  tag: v1
+  tag: v2
   pullPolicy: Always
 
 service:
