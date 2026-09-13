@@ -27,7 +27,7 @@ spec:
       containers:
         - name: backend
 
-          image: 183678667273.dkr.ecr.us-east-1.amazonaws.com/three-tier-backend:v2
+          image: 183678667273.dkr.ecr.us-east-1.amazonaws.com/three-tier-backend:v1
 
           imagePullPolicy: Always
 
